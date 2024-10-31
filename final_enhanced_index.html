@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaler Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Scaler Leaderboard</h1>
+        <div class="toggle-container">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by name..." aria-label="Search by name" onkeyup="filterLeaderboard()">
+            </div>
+        </div>
+        <table aria-label="Leaderboard">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Name</th>
+                    <th onclick="sortTable(1)">CodeChef</th>
+                    <th onclick="sortTable(2)">Codeforces</th>
+                    <th onclick="sortTable(3)">AtCoder</th>
+                    <th onclick="sortTable(4)">LeetCode</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
