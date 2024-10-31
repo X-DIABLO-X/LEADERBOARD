@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaler Leaderboard</title>
+    <style>
+        /* General Styles */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Toggle Button */
+        .dark-mode-toggle {
+            cursor: pointer;
+            padding: 10px 15px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: #388e3c;
+            transform: scale(1.05);
+        }
+
+        /* Search Bar */
+        .search-container input {
+            padding: 10px;
+            width: 70%;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1a1a1a;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #2c2c2c;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+        }
+
+        th.sorted-asc::after,
+        th.sorted-desc::after {
+            content: "▲";
+            font-size: 10px;
+            position: absolute;
+            right: 10px;
+            transform: rotate(0deg);
+            transition: transform 0.2s;
+        }
+
+        th.sorted-desc::after {
+            transform: rotate(180deg);
+        }
+
+        /* Row Hover Effect */
+        tr:hover {
+            background-color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Tooltip */
+        .rating:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: white;
+            color: black;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background-color: #f44336;
+            color: black;
+        }
+
+        /* Rating Colors */
+        .gray {
+            color: #a0a0a0;
+        }
+
+        .green {
+            color: #4caf50;
+        }
+
+        .blue {
+            color: #2196f3;
+        }
+
+        .yellow {
+            color: #ffc107;
+        }
+
+        .red {
+            color: #f44336;
+        }
+
+        .purple {
+            color: #9c27b0;
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Scaler Leaderboard</h1>
+        <div class="toggle-container">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by name..." aria-label="Search by name" onkeyup="filterLeaderboard()">
+            </div>
+            <button onclick="resetScores()">Reset Scores</button>
+        </div>
+        <table aria-label="Leaderboard">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Name</th>
+                    <th onclick="sortTable(1)">CodeChef</th>
+                    <th onclick="sortTable(2)">Codeforces</th>
+                    <th onclick="sortTable(3)">AtCoder</th>
+                    <th onclick="sortTable(4)">LeetCode</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Spinner Element -->
+    <div class="spinner" id="loadingSpinner"></div>
+
+    <script>
+        // JavaScript Enhancements
+        const users = [
+            { name: "Alice", codechef: 1500, codeforces: 1200, atcoder: 800, leetcode: 2000 },
+            { name: "Bob", codechef: 2000, codeforces: 1800, atcoder: 1600, leetcode: 2500 },
+            { name: "Charlie", codechef: 2500, codeforces: 2200, atcoder: 2000, leetcode: 3000 },
+            { name: "David", codechef: 1800, codeforces: 1600, atcoder: 1400, leetcode: 2200 },
+            { name: "Eve", codechef: 3000, codeforces: 2800, atcoder: 2400, leetcode: 3500 },
+        ];
+
+        let ascendingOrder = true;
+
+        function showSpinner() {
+            document.getElementById("loadingSpinner").style.display = "block";
+        }
+
+        function hideSpinner() {
+            document.getElementById("loadingSpinner").style.display = "none";
+        }
+
+        function getRatingColor(rating) {
+            if (rating < 0) return "gray"; // Negative ratings
+            if (rating < 1200) return "gray";
+            if (rating < 1400) return "green";
+            if (rating < 1600) return "blue";
+            if (rating < 1900) return "yellow";
+            if (rating < 2100) return "red";
+            return "purple";
+        }
+
+        function populateLeaderboard() {
+            const tbody = document.getElementById("leaderboardBody");
+            tbody.innerHTML = "";
+            users.forEach(user => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td><span class="rating ${getRatingColor(user.codechef)}">${user.codechef}</span></td>
+                    <td><span class="rating ${getRatingColor(user.codeforces)}">${user.codeforces}</span></td>
+                    <td><span class="rating ${getRatingColor(user.atcoder)}">${user.atcoder}</span></td>
+                    <td><span class="rating ${getRatingColor(user.leetcode)}">${user.leetcode}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            hideSpinner();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        function sortTable(columnIndex) {
+            showSpinner();
+            setTimeout(() => {
+                ascendingOrder = !ascendingOrder;
+                const fields = ["name", "codechef", "codeforces", "atcoder", "leetcode"];
+                users.sort((a, b) => {
+                    const aValue = a[fields[columnIndex]];
+                    const bValue = b[fields[columnIndex]];
+                    return ascendingOrder ? (aValue < bValue ? -1 : 1) : (aValue > bValue ? -1 : 1);
+                });
+                populateLeaderboard();
+            }, 300);
+        }
+
+        function filterLeaderboard() {
+            showSpinner();
+            setTimeout(() => {
+                const query = document.getElementById("searchInput").value.toLowerCase();
+                const tbody = document.getElementById("leaderboardBody");
+                tbody.innerHTML = "";
+                users
+                    .filter(user => user.name.toLowerCase().includes(query))
+                    .forEach(user => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${user.name}</td>
+                            <td><span class="rating ${getRatingColor(user.codechef)}">${user.codechef}</span></td>
+                            <td><span class="rating ${getRatingColor(user.codeforces)}">${user.codeforces}</span></td>
+                            <td><span class="rating ${getRatingColor(user.atcoder)}">${user.atcoder}</span></td>
+                            <td><span class="rating ${getRatingColor(user.leetcode)}">${user.leetcode}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                hideSpinner();
+            }, 300);
+        }
+
+        // Function to Add Test Cases
+        function addTestCases() {
+            users.push(
+                { name: "Frank", codechef: -100, codeforces: 1200, atcoder: 1500, leetcode: 1300 }, // Negative score
+                { name: "Grace", codechef: 0, codeforces: 0, atcoder: 0, leetcode: 0 }, // Edge case with zero
+                { name: "Hannah", codechef: 1500, codeforces: 1500, atcoder: 1500, leetcode: 1500 } // All ratings the same
+            );
+            populateLeaderboard();
+        }
+
+        // Function to Reset Scores
+        function resetScores() {
+            users.forEach(user => {
+                user.codechef = 0;
+                user.codeforces = 0;
+                user.atcoder = 0;
+                user.leetcode = 0;
+            });
+            populateLeaderboard();
+        }
+
+        window.addEventListener("load", () => {
+            document.querySelector(".container").style.opacity = "1";
+            populateLeaderboard();
+            addTestCases(); // Populate with test cases on load
+        });
+    </script>
+</body>
+
+</html>
