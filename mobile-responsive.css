@@ -1,0 +1,35 @@
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Leaderboard Container */
+.leaderboard {
+    width: 90%;
+    margin: auto;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .leaderboard {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+
+    .leaderboard-item {
+        display: block; /* Stack items vertically */
+        padding: 10px; /* Add padding for touch targets */
+        border: 1px solid #ccc;
+        margin: 5px 0; /* Space between items */
+    }
+
+    .header, .footer {
+        text-align: center; /* Center text for headers and footers */
+    }
+
+    .button {
+        width: 100%; /* Full-width buttons for better touch targets */
+        padding: 12px; /* Increased padding */
+    }
+}
