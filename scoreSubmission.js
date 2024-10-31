@@ -1,32 +1,27 @@
-// Importing the new components
+// Import new error message component
+import { showError } from './ui/errorMessages.js';
 import { showNotification } from './ui/notifications.js';
 import { showModal } from './ui/modals.js';
-import { showLoading, hideLoading } from './ui/loading.js'; // Hypothetical loading functions
 
-async function submitScoreToServer(score) {
-  // Mock implementation of score submission
-  return new Promise((resolve, reject) => {
-    // Simulate network delay
-    setTimeout(() => {
-      // Randomly resolve or reject for demonstration purposes
-      Math.random() > 0.5 ? resolve() : reject(new Error("Network error"));
-    }, 2000);
-  });
-}
+// Function to handle score submission
+function scoreSubmission(score) {
+  // Validate score input
+  if (!Number.isInteger(score) || score <= 0) {
+    showError("Please enter a positive integer score.");
+    return;
+  }
 
-async function scoreSubmission(score) {
   // Confirmation Modal
   showModal("Confirm Submission", "Are you sure you want to submit this score?", 
-    async () => {
-      showLoading(); // Show loading indicator
-      try {
-        await submitScoreToServer(score);
-        showNotification("Score submitted successfully!", "success");
-      } catch (error) {
-        showNotification(`Failed to submit score: ${error.message}`, "error");
-      } finally {
-        hideLoading(); // Hide loading indicator
-      }
+    () => {
+      // Assuming async score submission logic
+      submitScoreToServer(score)
+        .then(() => {
+          showNotification("Score submitted successfully!", "success");
+        })
+        .catch(() => {
+          showError("Failed to submit score. Please try again.");
+        });
     },
     () => {
       showNotification("Score submission canceled.", "error");
@@ -34,5 +29,5 @@ async function scoreSubmission(score) {
   );
 }
 
-// Example usage
-scoreSubmission(100); // Replace 100 with the actual score to be submitted
+// Export the scoreSubmission function for use in other modules
+export default scoreSubmission;
