@@ -1,0 +1,75 @@
+const { addScore, getLeaderboard, resetLeaderboard } = require('./leaderboard');
+
+describe('Leaderboard Functions', () => {
+  beforeEach(() => {
+    resetLeaderboard(); // Reset the leaderboard before each test
+  });
+
+  test('should add a score correctly', () => {
+    addScore('Alice', 100);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([{ name: 'Alice', score: 100 }]);
+  });
+
+  test('should update score for existing user', () => {
+    addScore('Bob', 50);
+    addScore('Bob', 75); // Update score
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([{ name: 'Bob', score: 75 }]);
+  });
+
+  test('should return an empty leaderboard if no scores added', () => {
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([]);
+  });
+
+  test('should handle multiple users correctly', () => {
+    addScore('Alice', 100);
+    addScore('Bob', 200);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([
+      { name: 'Alice', score: 100 },
+      { name: 'Bob', score: 200 },
+    ]);
+  });
+
+  test('should maintain leaderboard order if sorted by score', () => {
+    addScore('Charlie', 150);
+    addScore('Alice', 100);
+    addScore('Bob', 200);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([
+      { name: 'Bob', score: 200 },
+      { name: 'Charlie', score: 150 },
+      { name: 'Alice', score: 100 },
+    ]);
+  });
+
+  test('should reset the leaderboard correctly', () => {
+    addScore('Alice', 100);
+    resetLeaderboard();
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([]);
+  });
+
+  test('should handle zero and negative scores', () => {
+    addScore('NegativeUser', -50);
+    addScore('ZeroUser', 0);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toContainEqual({ name: 'NegativeUser', score: -50 });
+    expect(leaderboard).toContainEqual({ name: 'ZeroUser', score: 0 });
+  });
+
+  test('should handle large scores correctly', () => {
+    addScore('BigScoreUser', 1000000);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([{ name: 'BigScoreUser', score: 1000000 }]);
+  });
+
+  test('should only store the latest score for each user', () => {
+    addScore('Alice', 50);
+    addScore('Alice', 150);
+    const leaderboard = getLeaderboard();
+    expect(leaderboard).toEqual([{ name: 'Alice', score: 150 }]);
+  });
+});
