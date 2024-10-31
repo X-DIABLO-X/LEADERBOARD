@@ -17,16 +17,25 @@ function getRatingColor(rating) {
 
 function populateLeaderboard() {
     const tbody = document.getElementById("leaderboardBody");
+    tbody.innerHTML = ""; // Clear previous rows if any
+
+    // Calculate total rating and sort by total
     users.forEach(user => {
-        const average = ((user.codechef + user.codeforces + user.atcoder + user.leetcode) / 4).toFixed(1);
+        user.total = user.codechef + user.codeforces + user.atcoder + user.leetcode;
+    });
+    users.sort((a, b) => b.total - a.total);
+
+    // Populate with rank
+    users.forEach((user, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
+            <td>${index + 1}</td>
             <td>${user.name}</td>
             <td><span class="rating ${getRatingColor(user.codechef)}">${user.codechef}</span></td>
             <td><span class="rating ${getRatingColor(user.codeforces)}">${user.codeforces}</span></td>
             <td><span class="rating ${getRatingColor(user.atcoder)}">${user.atcoder}</span></td>
             <td><span class="rating ${getRatingColor(user.leetcode)}">${user.leetcode}</span></td>
-            <td><span class="rating ${getRatingColor(average)}">${average}</span></td>
+            <td>${user.total}</td>
         `;
         tbody.appendChild(row);
     });
