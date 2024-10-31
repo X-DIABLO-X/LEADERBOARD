@@ -1,34 +1,23 @@
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
-    color: #333;
 }
 
 .container {
     max-width: 800px;
     margin: auto;
-    padding: 20px;
     background: white;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease-in-out;
 }
 
 h1 {
     text-align: center;
-}
-
-.toggle-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-input[type="text"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    color: #333;
 }
 
 table {
@@ -39,37 +28,37 @@ table {
 
 th, td {
     padding: 10px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #ccc;
 }
 
-th {
-    cursor: pointer;
+.rating {
+    padding: 5px;
+    border-radius: 4px;
+    color: white;
 }
 
-th.asc::after {
-    content: " ▲";
+.gray {
+    background-color: gray;
 }
 
-th.desc::after {
-    content: " ▼";
+.green {
+    background-color: green;
 }
 
-.dark-mode {
-    background-color: #333;
-    color: #fff;
+.blue {
+    background-color: blue;
 }
 
-.dark-mode .container {
-    background-color: #444;
+.yellow {
+    background-color: yellow;
+    color: black; /* To ensure readability */
 }
 
-.dark-mode input[type="text"] {
-    background-color: #555;
-    color: #fff;
-    border: 1px solid #777;
+.red {
+    background-color: red;
 }
 
-.dark-mode th, .dark-mode td {
-    border-color: #666;
+.purple {
+    background-color: purple;
 }
