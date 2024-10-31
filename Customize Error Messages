@@ -1,0 +1,91 @@
+const { addScore, getLeaderboard, resetLeaderboard } = require('./leaderboard');
+
+describe('Leaderboard Functions', () => {
+  beforeEach(() => {
+    resetLeaderboard(); // Reset the leaderboard before each test
+  });
+
+  describe('Score Management', () => {
+    test('should add a score correctly for a new user', () => {
+      addScore('Alice', 100);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after adding Alice:', leaderboard);
+      expect(leaderboard).toEqual([{ name: 'Alice', score: 100 }], 'Expected leaderboard to contain Alice with a score of 100');
+    });
+
+    test('should update the score for an existing user correctly', () => {
+      addScore('Bob', 50);
+      console.log('Leaderboard after adding Bob with score 50:', getLeaderboard());
+      addScore('Bob', 75); // Update score
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after updating Bob with score 75:', leaderboard);
+      expect(leaderboard).toEqual([{ name: 'Bob', score: 75 }], 'Expected leaderboard to show Bob with updated score of 75');
+    });
+
+    test('should only store the latest score for each user', () => {
+      addScore('Alice', 50);
+      console.log('Leaderboard after adding Alice with score 50:', getLeaderboard());
+      addScore('Alice', 150);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after updating Alice with score 150:', leaderboard);
+      expect(leaderboard).toEqual([{ name: 'Alice', score: 150 }], 'Expected leaderboard to reflect latest score for Alice as 150');
+    });
+
+    test('should handle zero and negative scores without errors', () => {
+      addScore('NegativeUser', -50);
+      addScore('ZeroUser', 0);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after adding NegativeUser and ZeroUser:', leaderboard);
+      expect(leaderboard).toContainEqual({ name: 'NegativeUser', score: -50 }, 'Expected leaderboard to contain NegativeUser with score -50');
+      expect(leaderboard).toContainEqual({ name: 'ZeroUser', score: 0 }, 'Expected leaderboard to contain ZeroUser with score 0');
+    });
+
+    test('should handle large scores correctly and reflect them in the leaderboard', () => {
+      addScore('BigScoreUser', 1000000);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after adding BigScoreUser with large score:', leaderboard);
+      expect(leaderboard).toEqual([{ name: 'BigScoreUser', score: 1000000 }], 'Expected leaderboard to reflect BigScoreUser with score of 1000000');
+    });
+  });
+
+  describe('Leaderboard Functionality', () => {
+    test('should return an empty leaderboard if no scores are added', () => {
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard when no scores are added:', leaderboard);
+      expect(leaderboard).toEqual([], 'Expected leaderboard to be empty when no scores are added');
+    });
+
+    test('should handle multiple users and return their scores correctly', () => {
+      addScore('Alice', 100);
+      addScore('Bob', 200);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after adding multiple users:', leaderboard);
+      expect(leaderboard).toEqual([
+        { name: 'Alice', score: 100 },
+        { name: 'Bob', score: 200 },
+      ], 'Expected leaderboard to show scores for Alice and Bob correctly');
+    });
+
+    test('should maintain leaderboard order when sorted by score', () => {
+      addScore('Charlie', 150);
+      addScore('Alice', 100);
+      addScore('Bob', 200);
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after adding users in various orders:', leaderboard);
+      expect(leaderboard).toEqual([
+        { name: 'Bob', score: 200 },
+        { name: 'Charlie', score: 150 },
+        { name: 'Alice', score: 100 },
+      ], 'Expected leaderboard to maintain correct order based on scores');
+    });
+
+    test('should reset the leaderboard correctly after adding scores', () => {
+      addScore('Alice', 100);
+      console.log('Leaderboard before reset:', getLeaderboard());
+      resetLeaderboard();
+      const leaderboard = getLeaderboard();
+      console.log('Leaderboard after reset:', leaderboard);
+      expect(leaderboard).toEqual([], 'Expected leaderboard to be empty after reset');
+    });
+  });
+});
