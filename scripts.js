@@ -37,3 +37,8 @@ window.addEventListener("load", () => {
     document.querySelector(".container").style.opacity = "1";
     populateLeaderboard();
 });
+
+window.onload = function() {
+    document.querySelector('.container').classList.add('visible');
+};
+
