@@ -1,4 +1,3 @@
-
 const users = [
     { name: "Alice", codechef: 1500, codeforces: 1200, atcoder: 800, leetcode: 2000 },
     { name: "Bob", codechef: 2000, codeforces: 1800, atcoder: 1600, leetcode: 2500 },
@@ -19,6 +18,7 @@ function getRatingColor(rating) {
 function populateLeaderboard() {
     const tbody = document.getElementById("leaderboardBody");
     users.forEach(user => {
+        const average = ((user.codechef + user.codeforces + user.atcoder + user.leetcode) / 4).toFixed(1);
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${user.name}</td>
@@ -26,6 +26,7 @@ function populateLeaderboard() {
             <td><span class="rating ${getRatingColor(user.codeforces)}">${user.codeforces}</span></td>
             <td><span class="rating ${getRatingColor(user.atcoder)}">${user.atcoder}</span></td>
             <td><span class="rating ${getRatingColor(user.leetcode)}">${user.leetcode}</span></td>
+            <td><span class="rating ${getRatingColor(average)}">${average}</span></td>
         `;
         tbody.appendChild(row);
     });
