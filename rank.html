@@ -12,9 +12,9 @@
     <div class="container">
         <h1>Scaler Leaderboard</h1>
         <div class="toggle-container">
-            <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <button class="dark-mode-toggle" aria-label="Toggle Dark Mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Search by name..." onkeyup="filterLeaderboard()">
+                <input type="text" id="searchInput" placeholder="Search by name..." aria-label="Search by name" onkeyup="filterLeaderboard()">
             </div>
         </div>
         <table>
@@ -29,11 +29,68 @@
                     <th>Total</th>
                 </tr>
             </thead>
-            <tbody id="leaderboardBody"></tbody>
+            <tbody id="leaderboardBody">
+                <!-- Sample data; replace with dynamic data -->
+                <tr>
+                    <td>1</td>
+                    <td>John Doe</td>
+                    <td>1500</td>
+                    <td>1600</td>
+                    <td>1700</td>
+                    <td>1800</td>
+                    <td>8200</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Jane Smith</td>
+                    <td>1600</td>
+                    <td>1700</td>
+                    <td>1800</td>
+                    <td>1900</td>
+                    <td>9000</td>
+                </tr>
+                <!-- Add more rows as needed -->
+            </tbody>
         </table>
     </div>
 
     <script src="rank.js"></script>
+    <script>
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        // Filter leaderboard based on search input
+        function filterLeaderboard() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#leaderboardBody tr");
+
+            rows.forEach(row => {
+                const nameCell = row.querySelector("td:nth-child(2)");
+                row.style.display = nameCell.textContent.toLowerCase().includes(input) ? "" : "none";
+            });
+        }
+
+        // Sort table based on clicked column
+        function sortTable(columnIndex) {
+            const table = document.querySelector("table");
+            const rows = Array.from(table.rows).slice(1);
+            const isAscending = table.querySelector(`th:nth-child(${columnIndex + 1})`).classList.toggle("asc");
+
+            rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent;
+                const bText = b.cells[columnIndex].textContent;
+
+                return isAscending 
+                    ? aText.localeCompare(bText, undefined, { numeric: true })
+                    : bText.localeCompare(aText, undefined, { numeric: true });
+            });
+
+            rows.forEach(row => table.appendChild(row)); // Append rows in the new order
+        }
+    </script>
 </body>
 
 </html>
+
