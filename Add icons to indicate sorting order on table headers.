@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaler Leaderboard</title>
+    <style>
+        /* General Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Toggle Button */
+        .dark-mode-toggle {
+            cursor: pointer;
+            padding: 10px 15px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: #388e3c;
+            transform: scale(1.05);
+        }
+
+        /* Search Bar */
+        .search-container input {
+            padding: 10px;
+            width: 70%;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1a1a1a;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Sorting Icons */
+        th {
+            background-color: #2c2c2c;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sort-icon {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .asc .sort-icon::after {
+            content: "▲";
+        }
+
+        .desc .sort-icon::after {
+            content: "▼";
+        }
+
+        /* Row Hover Effect */
+        tr:hover {
+            background-color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Tooltip */
+        .rating:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: white;
+            color: black;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background-color: #f44336;
+            color: black;
+        }
+
+        /* Rating Colors */
+        .gray {
+            color: #a0a0a0;
+        }
+
+        .green {
+            color: #4caf50;
+        }
+
+        .blue {
+            color: #2196f3;
+        }
+
+        .yellow {
+            color: #ffc107;
+        }
+
+        .red {
+            color: #f44336;
+        }
+
+        .purple {
+            color: #9c27b0;
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Scaler Leaderboard</h1>
+        <div class="toggle-container">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by name..." aria-label="Search by name" onkeyup="filterLeaderboard()">
+            </div>
+        </div>
+        <table aria-label="Leaderboard">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Name <span class="sort-icon"></span></th>
+                    <th onclick="sortTable(1)">CodeChef <span class="sort-icon"></span></th>
+                    <th onclick="sortTable(2)">Codeforces <span class="sort-icon"></span></th>
+                    <th onclick="sortTable(3)">AtCoder <span class="sort-icon"></span></th>
+                    <th onclick="sortTable(4)">LeetCode <span class="sort-icon"></span></th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Spinner Element -->
+    <div class="spinner" id="loadingSpinner"></div>
+
+    <script>
+        const users = [
+            { name: "Alice", codechef: 1500, codeforces: 1200, atcoder: 800, leetcode: 2000 },
+            { name: "Bob", codechef: 2000, codeforces: 1800, atcoder: 
