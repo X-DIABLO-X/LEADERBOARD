@@ -2,8 +2,7 @@
 
 const config = {
   apiEndpoint: "https://api.example.com",
-  leaderboardLimit: 10, // Number of top scores to display
-  timeout: 5000, // Request timeout in milliseconds
+  console.log("hello");
   environment: process.env.NODE_ENV || "development",
   // Add more configuration settings as needed
 };
